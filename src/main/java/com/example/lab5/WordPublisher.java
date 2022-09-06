@@ -43,7 +43,7 @@ public class WordPublisher {
     }
 
     @RequestMapping(value = "/proof/{sentence}", method = RequestMethod.GET)
-    public void proofSentence(@PathVariable("sentence") String s){
+    public String proofSentence(@PathVariable("sentence") String s){
 //        System.out.println(s);
 //        System.out.println("bad List : " + words.badWords);
 //        System.out.println("good List : " + words.goodWords);
@@ -71,16 +71,17 @@ public class WordPublisher {
             }
         }
         if (bad && good){
-//            System.out.println("Found Bad & Good Word");
             rabbitTemplate.convertAndSend("Fanout","",s);
+            return "Found Bad & Good Word";
         }
         else if (bad && !good){
-//            System.out.println("Found Bad Word");
             rabbitTemplate.convertAndSend("Direct","bad",s);
+            return "Found Bad Word";
         }
         else if (!bad && good){
-//            System.out.println("Found Good Word");
             rabbitTemplate.convertAndSend("Direct","good",s);
+            return "Found Good Word";
         }
+        return "";
     }
 }
